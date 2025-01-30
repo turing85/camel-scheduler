@@ -1,0 +1,440 @@
+<?xml version="1.0"?>
+        <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>de.turing85</groupId>
+    <artifactId>camel-scheduler</artifactId>
+    <version>999-SNAPSHOT</version>
+    <name>camel-scheduler</name>
+    <description>The camel-scheduler project.</description>
+
+    <properties>
+        <!-- Plugin versions -->
+        <assembly-plugin.version>3.7.1</assembly-plugin.version>
+        <compiler-plugin.version>3.13.0</compiler-plugin.version>
+        <dependency-check-maven.version>12.0.1</dependency-check-maven.version>
+        <error-prone.version>2.36.0</error-prone.version>
+        <formatter-maven-plugin.version>2.24.1</formatter-maven-plugin.version>
+        <impsort-maven-plugin.version>1.12.0</impsort-maven-plugin.version>
+        <jar-plugin.version>3.4.2</jar-plugin.version>
+        <nullaway.version>0.12.3</nullaway.version>
+        <source-plugin.version>3.3.1</source-plugin.version>
+        <surefire-plugin.version>3.5.2</surefire-plugin.version>
+
+        <!-- Dependency versions -->
+        <jspecify.version>1.0.0</jspecify.version>
+
+        <camel.version>4.9.0</camel.version>
+        <log4j.version>2.24.3</log4j.version>
+        <slf4j.version>2.0.16</slf4j.version>
+
+        <!-- Project setup -->
+        <dependency-check-maven.goal>check</dependency-check-maven.goal>
+        <dependency-check-maven.skip>true</dependency-check-maven.skip>
+        <dependency-check-maven.formats>html,junit</dependency-check-maven.formats>
+
+        <failsafe-plugin.skip>false</failsafe-plugin.skip>
+
+        <formatter-maven-plugin.goal>format</formatter-maven-plugin.goal>
+        <formatter-maven-plugin.skip>false</formatter-maven-plugin.skip>
+
+        <git.url.https>https://github.com/turing85/camel-scheduler.git</git.url.https>
+        <git.url.ssh>git@github.com:turing85/camel-scheduler.git</git.url.ssh>
+
+        <impsort-maven-plugin.goal>sort</impsort-maven-plugin.goal>
+        <impsort-maven-plugin.skip>false</impsort-maven-plugin.skip>
+
+        <maven.compiler.parameters>true</maven.compiler.parameters>
+        <maven.compiler.proc>full</maven.compiler.proc>
+        <maven.compiler.release>21</maven.compiler.release>
+
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <surefire-plugin.skip>false</surefire-plugin.skip>
+    </properties>
+
+    <url>https://github.com/turing85/camel-scheduler</url>
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+        </repository>
+        <site>
+            <id>github.com</id>
+            <url>${project.url}</url>
+        </site>
+    </distributionManagement>
+    <scm child.scm.connection.inherit.append.path="false"
+         child.scm.developerConnection.inherit.append.path="false"
+         child.scm.url.inherit.append.path="false">
+        <connection>scm:${git.url.https}</connection>
+        <developerConnection>scm:${git.url.ssh}</developerConnection>
+        <url>${project.url}</url>
+        <tag>HEAD</tag>
+    </scm>
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <build>
+        <plugins>
+            <!-- phase: validate -->
+            <plugin>
+                <groupId>net.revelc.code.formatter</groupId>
+                <artifactId>formatter-maven-plugin</artifactId>
+                <version>${formatter-maven-plugin.version}</version>
+                <configuration>
+                    <configFile>google-style.xml</configFile>
+                    <lineEnding>LF</lineEnding>
+                    <skip>${formatter-maven-plugin.skip}</skip>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>${formatter-maven-plugin.goal}</goal>
+                        </goals>
+                        <phase>validate</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>net.revelc.code</groupId>
+                <artifactId>impsort-maven-plugin</artifactId>
+                <version>${impsort-maven-plugin.version}</version>
+                <configuration>
+                    <groups>java.,javax.,jakarta.,*</groups>
+                    <lineEnding>LF</lineEnding>
+                    <removeUnused>true</removeUnused>
+                    <skip>${impsort-maven-plugin.skip}</skip>
+                    <staticAfter>true</staticAfter>
+                    <staticGroups>java,javax.,jakarta.,*</staticGroups>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>${impsort-maven-plugin.goal}</goal>
+                        </goals>
+                        <phase>validate</phase>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- phase: compile -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${compiler-plugin.version}</version>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>com.google.errorprone</groupId>
+                            <artifactId>error_prone_core</artifactId>
+                            <version>${error-prone.version}</version>
+                        </path>
+                        <path>
+                            <groupId>com.uber.nullaway</groupId>
+                            <artifactId>nullaway</artifactId>
+                            <version>${nullaway.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                    <compilerArgs>
+                        <arg>-XDcompilePolicy=simple</arg>
+                        <arg>--should-stop=ifError=FLOW</arg>
+                        <arg>-Xplugin:ErrorProne -XepOpt:NullAway:AnnotatedPackages=de.turing85</arg>
+                    </compilerArgs>
+                </configuration>
+            </plugin>
+
+            <!-- phase: test -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${surefire-plugin.version}</version>
+                <configuration>
+                    <skip>${surefire-plugin.skip}</skip>
+                    <systemPropertyVariables>
+                        <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+                        <maven.home>${maven.home}</maven.home>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
+
+            <!-- phase: package -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>${jar-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>default-jar</id>
+                        <phase>none</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>${assembly-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>assemble-runner</id>
+                        <phase>package</phase>
+                        <configuration>
+                            <appendAssemblyId>true</appendAssemblyId>
+                            <archive>
+                                <manifest>
+                                    <mainClass>de.turing85.camel.scheduler.Starter</mainClass>
+                                </manifest>
+                            </archive>
+                            <inlineDescriptors>
+                                <inlineDescriptor>
+                                    <id>runner</id>
+                                    <formats>
+                                        <format>jar</format>
+                                    </formats>
+                                    <includeBaseDirectory>false</includeBaseDirectory>
+                                    <dependencySets>
+                                        <dependencySet>
+                                            <outputDirectory>/</outputDirectory>
+                                            <useProjectArtifact>true</useProjectArtifact>
+                                            <unpack>true</unpack>
+                                            <scope>runtime</scope>
+                                        </dependencySet>
+                                    </dependencySets>
+                                </inlineDescriptor>
+                            </inlineDescriptors>
+                        </configuration>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- phase: verify -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>${surefire-plugin.version}</version>
+                <configuration>
+                    <skip>${failsafe-plugin.skip}</skip>
+                    <systemPropertyVariables>
+                        <native.image.path>${project.build.directory}/${project.build.finalName}-runner</native.image.path>
+                        <maven.home>${maven.home}</maven.home>
+                    </systemPropertyVariables>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <version>${dependency-check-maven.version}</version>
+                <configuration>
+                    <outputDirectory>${project.build.directory}/owasp</outputDirectory>
+                    <failBuildOnCVSS>0</failBuildOnCVSS>
+                    <formats>${dependency-check-maven.formats}</formats>
+                    <skip>${dependency-check-maven.skip}</skip>
+                    <suppressionFile>src/test/resources/owasp-dependency-check.xml</suppressionFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>${dependency-check-maven.goal}</goal>
+                        </goals>
+                        <phase>verify</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>${source-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.apache.camel</groupId>
+                <artifactId>camel-bom</artifactId>
+                <version>${camel.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-bom</artifactId>
+                <version>${log4j.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.jspecify</groupId>
+            <artifactId>jspecify</artifactId>
+            <version>${jspecify.version}</version>
+        </dependency>
+
+        <!-- Logging -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j2-impl</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+
+        <!-- Camel -->
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-endpointdsl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-log</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-main</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-scheduler</artifactId>
+        </dependency>
+    </dependencies>
+
+    <profiles>
+        <profile>
+            <id>owasp</id>
+            <activation>
+                <property>
+                    <name>owasp</name>
+                </property>
+            </activation>
+            <properties>
+                <dependency-check-maven.skip>false</dependency-check-maven.skip>
+            </properties>
+        </profile>
+
+        <!-- ci-profiles -->
+        <profile>
+            <id>ci</id>
+            <activation>
+                <property>
+                    <name>ci</name>
+                </property>
+            </activation>
+            <properties>
+                <formatter-maven-plugin.goal>validate</formatter-maven-plugin.goal>
+                <impsort-maven-plugin.goal>check</impsort-maven-plugin.goal>
+            </properties>
+        </profile>
+        <profile>
+            <id>ci-owasp</id>
+            <activation>
+                <property>
+                    <name>ci-owasp</name>
+                </property>
+            </activation>
+            <properties>
+                <dependency-check-maven.formats>junit</dependency-check-maven.formats>
+                <dependency-check-maven.skip>false</dependency-check-maven.skip>
+                <formatter-maven-plugin.skip>true</formatter-maven-plugin.skip>
+                <impsort-maven-plugin.skip>true</impsort-maven-plugin.skip>
+                <skipTests>true</skipTests>
+            </properties>
+        </profile>
+        <profile>
+            <id>ci-populate-cache</id>
+            <activation>
+                <property>
+                    <name>ci-populate-cache</name>
+                </property>
+            </activation>
+            <properties>
+                <dependency-check-maven.skip>true</dependency-check-maven.skip>
+                <formatter-maven-plugin.skip>true</formatter-maven-plugin.skip>
+                <impsort-maven-plugin.skip>true</impsort-maven-plugin.skip>
+            </properties>
+        </profile>
+
+        <!-- skip profiles -->
+        <profile>
+            <id>skip-failsafe</id>
+            <activation>
+                <property>
+                    <name>skip-failsafe</name>
+                </property>
+            </activation>
+            <properties>
+                <failsafe-plugin.skip>true</failsafe-plugin.skip>
+            </properties>
+        </profile>
+        <profile>
+            <id>skip-format</id>
+            <activation>
+                <property>
+                    <name>skip-format</name>
+                </property>
+            </activation>
+            <properties>
+                <formatter-maven-plugin.skip>true</formatter-maven-plugin.skip>
+                <impsort-maven-plugin.skip>true</impsort-maven-plugin.skip>
+            </properties>
+        </profile>
+        <profile>
+            <id>skip-surefire</id>
+            <activation>
+                <property>
+                    <name>skip-surefire</name>
+                </property>
+            </activation>
+            <properties>
+                <surefire-plugin.skip>true</surefire-plugin.skip>
+            </properties>
+        </profile>
+    </profiles>
+</project>
