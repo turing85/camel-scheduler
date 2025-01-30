@@ -25,19 +25,8 @@ public class SchedulerRoute extends RouteBuilder {
         .routeId(ROUTE_ID)
         .setProperty(Exchange.TIMER_COUNTER, counter::incrementAndGet)
         .log("Begin ${exchangeProperty.%s}".formatted(Exchange.TIMER_COUNTER))
-        .process(exchange -> sleepFor(Duration.ofSeconds(5)))
+        .delay(Duration.ofSeconds(5).toMillis())
         .log("End ${exchangeProperty.%s}".formatted(Exchange.TIMER_COUNTER));
     // @formatter:on
-  }
-
-  private static void sleepFor(final Duration duration) {
-    while (true) {
-      try {
-        Thread.sleep(duration.toMillis());
-        break;
-      } catch (InterruptedException e) {
-        Thread.currentThread().interrupt();
-      }
-    }
   }
 }
